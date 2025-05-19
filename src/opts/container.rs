@@ -902,10 +902,10 @@ mod tests {
             ContainerCreateOptsBuilder::default()
                 .image("test_image")
                 .healthcheck(HealthConfig {
-                    interval: Some(30),
-                    timeout: Some(5),
+                    interval: Some(1000000),
+                    timeout: Some(5000000),
                     retries: Some(3),
-                    start_period: Some(10),
+                    start_period: Some(10000000),
                     test: Some(vec![String::from("CMD-SHELL"), String::from("echo hello")]),
                 }),
             r#"{"Healthcheck":{"Interval":30,"Retries":3,"StartPeriod":10,"Test":["CMD-SHELL","echo hello"],"Timeout":5},"HostConfig":{},"Image":"test_image"}"#
