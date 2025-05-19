@@ -901,7 +901,7 @@ mod tests {
         test_case!(
             ContainerCreateOptsBuilder::default()
                 .image("test_image")
-                .healthcheck(HealthConfig{
+                .healthcheck(HealthConfig {
                     interval: Some(30),
                     timeout: Some(5),
                     retries: Some(3),
