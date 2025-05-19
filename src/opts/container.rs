@@ -1,4 +1,4 @@
-use crate::models::{DeviceRequest, Labels, NetworkingConfig};
+use crate::models::{DeviceRequest, HealthConfig, Labels, NetworkingConfig};
 use crate::opts::ImageName;
 use containers_api::opts::{Filter, FilterItem};
 use containers_api::{
@@ -509,6 +509,11 @@ impl ContainerCreateOptsBuilder {
         self
     }
 
+    pub fn healthcheck(mut self, health_config: HealthConfig) -> Self {
+        self.params.insert("Healthcheck", json!(health_config));
+        self
+    }
+
     impl_str_field!(
         /// Specify the working dir (corresponds to the `-w` docker cli argument)
         working_dir => "WorkingDir"
@@ -891,6 +896,19 @@ mod tests {
                     "[::1]:8080".parse::<SocketAddr>().unwrap()
                 ),
             r#"{"ExposedPorts":{"80/tcp":{}},"HostConfig":{"PortBindings":{"80/tcp":[{"HostIp":"::1","HostPort":"8080"}]}},"Image":"test_image"}"#
+        );
+
+        test_case!(
+            ContainerCreateOptsBuilder::default()
+                .image("test_image")
+                .healthcheck(HealthConfig{
+                    interval: Some(30),
+                    timeout: Some(5),
+                    retries: Some(3),
+                    start_period: Some(10),
+                    test: Some(vec![String::from("CMD-SHELL"), String::from("echo hello")]),
+                }),
+            r#"{"Healthcheck":{"Interval":30,"Retries":3,"StartPeriod":10,"Test":["CMD-SHELL","echo hello"],"Timeout":5},"HostConfig":{},"Image":"test_image"}"#
         );
 
         test_case!(
